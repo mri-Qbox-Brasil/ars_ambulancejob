@@ -54,7 +54,7 @@ exports('bandage', function(data, slot)
     local playerPed = PlayerPedId()
     local maxHealth = GetEntityMaxHealth(playerPed)
     local health = GetEntityHealth(playerPed)
- 
+
     if health < maxHealth then
         exports.ox_inventory:useItem(data, function(data)
             if data then
@@ -90,6 +90,46 @@ exports('bandage', function(data, slot)
     end
 end)
 
+exports('analgesic', function(data, slot)
+    local playerPed = PlayerPedId()
+    local maxHealth = GetEntityMaxHealth(playerPed)
+    local health = GetEntityHealth(playerPed)
+
+    if health < maxHealth then
+        exports.ox_inventory:useItem(data, function(data)
+            if data then
+                lib.progressBar({
+                    duration = 4000,
+                    position = 'bottom',
+                    label = 'Tomando analgésico...',
+                    useWhileDead = false,
+                    canCancel = true,
+                    disable = {
+                        car = true,
+                        move = false,
+                        combat = true
+                    },
+                    anim = {
+                        dict = 'mp_player_intdrink',
+                        clip = 'loop_bottle', flag = 49
+                    },
+                    prop = {
+                        model = 'prop_cs_pills',
+                        pos = vec3(0.15, 0.04, 0.01),
+                        rot = vec3(-90.0, 0.0, 0.0),
+                        bone = 18905
+                    },
+                })
+                SetEntityHealth(playerPed, math.min(maxHealth, math.floor(health + maxHealth / 20)))
+                lib.notify({description = 'A dor diminuiu...'})
+            end
+        end)
+    else
+        lib.notify({type = 'error', description = 'Você não precisa de um analgésico agora.'})
+        return false
+    end
+end)
+
 -- Registra o uso do item de adrenalina com o ox_target
 exports.ox_target:addGlobalPlayer({
     {
@@ -108,7 +148,7 @@ exports.ox_target:addGlobalPlayer({
             local targetPlayerId = GetPlayerServerId(NetworkGetEntityOwner(data.entity))
 
             local success = lib.progressBar({
-                duration = 5000,  
+                duration = 5000,
                 label = 'Aplicando adrenalina...',
                 canCancel = false,
                 anim = { dict = 'amb@medic@standing@tendtodead@base', clip = 'base' },

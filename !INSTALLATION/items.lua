@@ -1,9 +1,9 @@
-['adrenaline'] = {
-    label = 'Adrenalina',
+["adrenaline"] = {
+    label = "Adrenalina",
     weight = 100,
     stack = false,
     close = true,
-    description = 'Acorda até defunto.'
+    description = "Acorda até defunto."
 },
 ["medicalbag"] = {
     label = "Bolsa de Primeiros Socorros",
@@ -19,6 +19,15 @@
     description = "Uma simples bandagem usada para cobrir e proteger ferimentos.",
     client = {
         export = "ars_ambulancejob.bandage",
+    },
+},
+["analgesic"] = {
+    label = "Analgésico",
+    weight = 10,
+    stack = true,
+    description = "Um analgésico usado para aliviar a dor.",
+    client = {
+        export = "ars_ambulancejob.analgesic",
     },
 },
 ["defibrillator"] = {

@@ -83,6 +83,7 @@ return {
                 },
                 items = {
                     { name = "bandage", label = "Bandagem", icon = "fas fa-bandage", price = 10 },
+                    { name = "adrenaline", label = "Adrenalina", icon = "fas fa-syringe", price = 10 },
                 },
             },
         },
