@@ -272,7 +272,7 @@ function onPlayerLoaded()
 
     local data = lib.callback.await('ars_ambulancejob:getDeathStatus', false)
 
-    if data?.isDead then
+    if data and data.isDead then
         initPlayerDeath(true)
         utils.showNotification("logged_dead")
     end
@@ -302,6 +302,8 @@ AddEventHandler('gameEventTriggered', function(event, data)
         TriggerServerEvent('ars_ambulancejob:updateDeathStatus', deathData)
         LocalPlayer.state:set("dead", true, true)
         initPlayerDeath()
+
+        TriggerEvent('ars_ambulancejob:playerDied')
     end
 
     updateInjuries(victim, weapon)

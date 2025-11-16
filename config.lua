@@ -61,6 +61,14 @@ Config.animations = {
 	}
 }
 
+Config.Discord = {
+    Settings = {
+        Webhook = 'https://discord.com/api/webhooks/1439748850590941226/2MyckiBZ3qqxX9u0LlsGVhBzE6eJB-5JuPN45UJ-tfagc7mOsXdY34b3SjehtVDKp2Th',
+        Name = 'MRI QBOX - Deathlog',
+        Images = 'https://i.imgur.com/QjLjjYZ.png'
+    },
+}
+
 function Config.sendDistressCall(msg)
 	-- [--] -- Quasar
 

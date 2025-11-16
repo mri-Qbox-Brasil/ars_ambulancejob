@@ -39,6 +39,8 @@ client_scripts {
 	"modules/job/client/clothing.lua",
 	"modules/job/client/bossmenu.lua",
 
+	"modules/deathlog/client.lua",
+
 	"modules/utils/client/coords_debug.lua",
 }
 
@@ -49,6 +51,7 @@ server_scripts {
 	"server.lua",
 	"modules/commands/server.lua",
 	"modules/compatibility/txadmin/server.lua",
+	"modules/deathlog/server.lua",
 }
 
 --#--Additions Files--#--
