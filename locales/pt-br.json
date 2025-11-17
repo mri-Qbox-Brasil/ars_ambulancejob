@@ -54,7 +54,7 @@
 	"medics_online": "Sistema indisponível. Existem paramédicos em serviço!",
 	"wait_time": "Você precisa esperar %s segundos antes de fazer este comando",
 	"medic_coming": "Chamado enviado",
-	"logged_dead": "Você saiu do jogo como morto",
+	"logged_dead": "Você relogou no jogo morto.",
 	"revive_all": "Reanimar todos os jogadores",
 	"revived_all": "Você reanimou todos",
     "bossmenu_label":  "Menu do Chefe",

@@ -26,6 +26,7 @@ Config.medicBagItem = "medicalbag"
 Config.tabletItem = "emstablet"
 
 Config.helpCommand = "911"
+Config.disableEMSCalls = false -- true >> desativar as chamadas de emergência
 Config.removeItemsOnRespawn = true
 Config.keepItemsOnRespawn = { "money", "WEAPON_PISTOL" } -- items that will not be removed when respawed (works only when Config.RemoveItemsOnRespawn is true)
 

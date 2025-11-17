@@ -26,6 +26,8 @@ local IsPedFatallyInjured          = IsPedFatallyInjured
 
 local animations                   = lib.load("config").animations
 local mumbleDisable                 = lib.load("config").mumbleDisable
+local disableEMSCalls               = lib.load("config").disableEMSCalls
+
 function stopPlayerDeath()
     player.isDead = false
     -- player.injuries = {}
@@ -229,13 +231,15 @@ local function initPlayerDeath(logged_dead)
 
                 local elapsedSeconds = math.floor((GetGameTimer() - deathTime) / 1000)
 
-                utils.drawTextFrame({
+                if not disableEMSCalls then
+                    utils.drawTextFrame({
                     x = 0.5,
-                    y = 0.9,
-                    msg = locale("death_screen_call_medic")
-                })
+                        y = 0.9,
+                        msg = locale("death_screen_call_medic")
+                    })
+                end
 
-                if IsControlJustPressed(0, 38) then
+                if IsControlJustPressed(0, 38) and not disableEMSCalls then
                     createDistressCall()
                 end
 
@@ -281,9 +285,17 @@ function onPlayerLoaded()
 
     if data and data.isDead then
         initPlayerDeath(true)
-        utils.showNotification("logged_dead")
+        utils.showNotification(locale("logged_dead"))
     end
 end
+
+AddEventHandler('onResourceStart', function(resource)
+    if resource == GetCurrentResourceName() then
+        if LocalPlayer.state.isLoggedIn then
+            onPlayerLoaded()
+        end
+    end
+end)
 
 AddEventHandler('gameEventTriggered', function(event, data)
     if event ~= 'CEventNetworkEntityDamage' then return end
