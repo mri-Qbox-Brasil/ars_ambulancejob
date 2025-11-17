@@ -18,6 +18,7 @@ Config.reviveAllCommand = "reviveall"
 Config.adminGroup = "admin"
 
 Config.mumbleDisable = false -- true >> desativar o mumble ao morrer
+Config.healthRegen = true -- true >> desativar a recuperação de vida automática do GTA
 
 Config.medicBagProp = "xm_prop_x17_bag_med_01a"
 Config.medicBagItem = "medicalbag"

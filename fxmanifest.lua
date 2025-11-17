@@ -41,6 +41,8 @@ client_scripts {
 
 	"modules/deathlog/client.lua",
 
+    "modules/survival/client.lua",
+
 	"modules/utils/client/coords_debug.lua",
 }
 
