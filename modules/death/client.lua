@@ -25,6 +25,7 @@ local IsPedDeadOrDying             = IsPedDeadOrDying
 local IsPedFatallyInjured          = IsPedFatallyInjured
 
 local animations                   = lib.load("config").animations
+local mumbleDisable                 = lib.load("config").mumbleDisable
 function stopPlayerDeath()
     player.isDead = false
     -- player.injuries = {}
@@ -60,6 +61,9 @@ function stopPlayerDeath()
     -- LocalPlayer.state:set("injuries", {}, true)
     LocalPlayer.state:set("dead", false, true)
     LocalPlayer.state:set("isDead", false, true)
+    if mumbleDisable then
+        MumbleSetActive(true)
+    end
     exports["pma-voice"]:overrideProximityRange(3.0, false)
 
     player.distressCallTime = nil
@@ -161,6 +165,9 @@ local function initPlayerDeath(logged_dead)
 
     player.isDead = true
     LocalPlayer.state:set("isDead", true, true)
+    if mumbleDisable then
+        MumbleSetActive(false)
+    end
     exports["pma-voice"]:overrideProximityRange(0.0, false)
 
     startCommandTimer()
