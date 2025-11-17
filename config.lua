@@ -17,7 +17,7 @@ Config.reviveAllCommand = "reviveall"
 
 Config.adminGroup = "admin"
 
-Config.mumbleDisable = true -- true >> desativar o mumble ao morrer
+Config.mumbleDisable = false -- true >> desativar o mumble ao morrer
 
 Config.medicBagProp = "xm_prop_x17_bag_med_01a"
 Config.medicBagItem = "medicalbag"
