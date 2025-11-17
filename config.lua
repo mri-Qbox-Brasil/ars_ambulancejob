@@ -28,7 +28,8 @@ Config.tabletItem = "emstablet"
 Config.helpCommand = "911"
 Config.disableEMSCalls = false -- true >> desativar as chamadas de emergência
 Config.removeItemsOnRespawn = true
-Config.keepItemsOnRespawn = { "money", "WEAPON_PISTOL" } -- items that will not be removed when respawed (works only when Config.RemoveItemsOnRespawn is true)
+Config.disableRespawnAnimation = false -- true >> desativar a animação de respawn
+Config.keepItemsOnRespawn = {} --{ "money", "WEAPON_PISTOL" } -- items that will not be removed when respawed (works only when Config.RemoveItemsOnRespawn is true)
 
 Config.baseInjuryReward = 150
 Config.reviveReward = 700

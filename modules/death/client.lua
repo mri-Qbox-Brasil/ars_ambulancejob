@@ -27,6 +27,7 @@ local IsPedFatallyInjured          = IsPedFatallyInjured
 local animations                   = lib.load("config").animations
 local mumbleDisable                 = lib.load("config").mumbleDisable
 local disableEMSCalls               = lib.load("config").disableEMSCalls
+local disableRespawnAnimation       = lib.load("config").disableRespawnAnimation
 
 function stopPlayerDeath()
     player.isDead = false
@@ -58,7 +59,9 @@ function stopPlayerDeath()
     AnimpostfxStopAll()
 
     DoScreenFadeIn(700)
-    TaskPlayAnim(playerPed, animations["get_up"].dict, animations["get_up"].clip, 8.0, -8.0, -1, 0, 0, 0, 0, 0)
+    if not disableRespawnAnimation then
+        TaskPlayAnim(playerPed, animations["get_up"].dict, animations["get_up"].clip, 8.0, -8.0, -1, 0, 0, 0, 0, 0)
+    end
 
     -- LocalPlayer.state:set("injuries", {}, true)
     LocalPlayer.state:set("dead", false, true)
@@ -117,9 +120,6 @@ local function respawnPlayer()
 
     TriggerEvent('ND_Police:uncuffPed')
 
-    lib.requestAnimDict("anim@gangops@morgue@table@")
-    lib.requestAnimDict("switch@franklin@bed")
-
     local hospital = utils.getClosestHospital()
     local bed = nil
 
@@ -139,20 +139,23 @@ local function respawnPlayer()
 
     player.respawning = true
 
-    SetEntityCoords(playerPed, bed.bedPoint)
-    SetEntityHeading(playerPed, bed.bedPoint.w)
-    TaskPlayAnim(playerPed, "anim@gangops@morgue@table@", "body_search", 2.0, 2.0, -1, 1, 0, false, false, false)
-    FreezeEntityPosition(playerPed, true)
+    if not disableRespawnAnimation then
+        lib.requestAnimDict("anim@gangops@morgue@table@")
+        lib.requestAnimDict("switch@franklin@bed")
 
+        SetEntityCoords(playerPed, bed.bedPoint)
+        SetEntityHeading(playerPed, bed.bedPoint.w)
+        TaskPlayAnim(playerPed, "anim@gangops@morgue@table@", "body_search", 2.0, 2.0, -1, 1, 0, false, false, false)
+        FreezeEntityPosition(playerPed, true)
+        DoScreenFadeIn(300)
+        Wait(5000)
+        SetEntityCoords(playerPed, vector3(bed.bedPoint.x, bed.bedPoint.y, bed.bedPoint.z) + vector3(0.0, 0.0, -1.0))
+        FreezeEntityPosition(playerPed, false)
+        SetEntityHeading(cache.ped, bed.bedPoint.w + 90.0)
+        TaskPlayAnim(playerPed, "switch@franklin@bed", "sleep_getup_rubeyes", 1.0, 1.0, -1, 8, -1, 0, 0, 0)
 
-    DoScreenFadeIn(300)
-    Wait(5000)
-    SetEntityCoords(playerPed, vector3(bed.bedPoint.x, bed.bedPoint.y, bed.bedPoint.z) + vector3(0.0, 0.0, -1.0))
-    FreezeEntityPosition(playerPed, false)
-    SetEntityHeading(cache.ped, bed.bedPoint.w + 90.0)
-    TaskPlayAnim(playerPed, "switch@franklin@bed", "sleep_getup_rubeyes", 1.0, 1.0, -1, 8, -1, 0, 0, 0)
-
-    Wait(5000)
+        Wait(5000)
+    end
 
     stopPlayerDeath()
     ClearPedTasks(playerPed)
