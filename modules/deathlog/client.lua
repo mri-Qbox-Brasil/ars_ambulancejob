@@ -1,6 +1,5 @@
 local Config = lib.load("config")
 local weapons = lib.load("data.weapons")
-local bodyParts = lib.load("data.body_parts")
 
 local Weapon_Groups = {
     [2685387236] = 'Melee',
@@ -42,8 +41,8 @@ end
 
 local function processPlayerDeath()
     local playerPed = cache.ped or PlayerPedId()
-    local causeOfDeath = GetPedCauseOfDeath(playerPed)
     local sourceOfDeath = GetPedSourceOfDeath(playerPed)
+    local killerPed = GetPedKiller(playerPed)
     local coords = GetEntityCoords(playerPed)
     local streetName = GetStreetNameFromHashKey(GetStreetNameAtCoord(coords.x, coords.y, coords.z))
 
@@ -51,32 +50,70 @@ local function processPlayerDeath()
     local vehicleName
     local isVehicleKill = false
 
-    if sourceOfDeath ~= 0 then
+    if LocalPlayer.state.deathKillerServerId then
+        killerServerId = LocalPlayer.state.deathKillerServerId
+        if LocalPlayer.state.deathIsVehicleKill then
+            isVehicleKill = true
+        end
+        if Config.Debug then
+            print('^5Deathlog^7: Usando assassino do evento - Server ID: ' .. tostring(killerServerId) .. ', IsVehicleKill: ' .. tostring(isVehicleKill))
+        end
+        LocalPlayer.state:set("deathKillerServerId", nil, true)
+        LocalPlayer.state:set("deathIsVehicleKill", nil, true)
+    end
+
+    if not killerServerId and killerPed and killerPed ~= 0 then
+        if IsPedAPlayer(killerPed) then
+            killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(killerPed))
+            if Config.Debug then
+                print('^5Deathlog^7: Usando GetPedKiller() - Server ID: ' .. tostring(killerServerId))
+            end
+        end
+    end
+
+    if not killerServerId and sourceOfDeath and sourceOfDeath ~= 0 then
         if IsEntityAVehicle(sourceOfDeath) then
             local driver = GetPedInVehicleSeat(sourceOfDeath, -1)
-            if driver ~= 0 then
+            if driver and driver ~= 0 then
                 if IsPedAPlayer(driver) then
                     local veh = GetVehiclePedIsIn(driver, false)
-                    local modelHash = GetEntityModel(veh)
-                    local modelName = GetDisplayNameFromVehicleModel(modelHash)
-                    vehicleName = GetLabelText(modelName)
+                    if veh and veh ~= 0 then
+                        local modelHash = GetEntityModel(veh)
+                        local modelName = GetDisplayNameFromVehicleModel(modelHash)
+                        vehicleName = GetLabelText(modelName)
 
-                    if vehicleName == "NULL" then
-                        vehicleName = modelName
+                        if vehicleName == "NULL" then
+                            vehicleName = modelName
+                        end
+
+                        killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(driver))
                     end
-
-                    killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(driver))
                 end
                 isVehicleKill = true
             end
         elseif IsEntityAPed(sourceOfDeath) and IsPedAPlayer(sourceOfDeath) then
-            killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(sourceOfDeath))
+            if not killerServerId then -- Só usar se GetPedKiller não encontrou nada
+                killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(sourceOfDeath))
+            end
         end
     end
 
     local weaponName = locale("deathlog_unknown")
     local deathReasonShort = locale("deathlog_killed")
     local deathReason = locale("deathlog_was_killed")
+
+    local causeOfDeath = LocalPlayer.state.deathWeaponHash
+    if causeOfDeath then
+        if Config.Debug then
+            print('^5Deathlog^7: Usando arma do evento - Hash: ' .. tostring(causeOfDeath))
+        end
+        LocalPlayer.state:set("deathWeaponHash", nil, true)
+    else
+        causeOfDeath = GetPedCauseOfDeath(playerPed)
+        if Config.Debug then
+            print('^5Deathlog^7: Usando GetPedCauseOfDeath() - Hash: ' .. tostring(causeOfDeath))
+        end
+    end
 
     local weaponData, weaponKey = getWeaponData(causeOfDeath)
 
@@ -165,15 +202,20 @@ local function processPlayerDeath()
     end
 
     local isSuicide = false
+    local isNPCKill = LocalPlayer.state.deathIsNPCKill or false
     local currentServerId = cache.serverId or GetPlayerServerId(PlayerId())
 
     local isFallDamage = causeOfDeath == -842959696
     local isAnimal = causeOfDeath == -100946242 or causeOfDeath == 148160082
 
-    if not isFallDamage and not isAnimal then
+    if isNPCKill then
+        LocalPlayer.state:set("deathIsNPCKill", nil, true)
+    end
+
+    if not isFallDamage and not isAnimal and not isNPCKill then
         if killerServerId and killerServerId == currentServerId then
             isSuicide = true
-        elseif not killerServerId and sourceOfDeath == 0 then
+        elseif not killerServerId and sourceOfDeath == 0 and not isNPCKill then
             isSuicide = true
         end
     end
@@ -185,17 +227,26 @@ local function processPlayerDeath()
             weaponName = locale("deathlog_self_inflicted")
         end
         killerServerId = nil
+    elseif isNPCKill then
+        deathReason = locale("deathlog_killed_by_npc") or "foi morto por um NPC"
+        deathReasonShort = locale("deathlog_killed_by_npc_short") or "Morto por NPC"
     end
 
     local victimName = GetPlayerName(PlayerId())
     local message
 
-    if killerServerId and killerServerId > 0 and not isSuicide then
+    if killerServerId and killerServerId > 0 and not isSuicide and not isNPCKill then
         local killerName = GetPlayerName(GetPlayerFromServerId(killerServerId)) or locale("deathlog_unknown")
         message = string.format('**%s** %s by **%s** with a %s',
             victimName,
             deathReason,
             killerName,
+            weaponName
+        )
+    elseif isNPCKill then
+        message = string.format('**%s** %s (%s)',
+            victimName,
+            deathReason,
             weaponName
         )
     else
@@ -206,13 +257,17 @@ local function processPlayerDeath()
         )
     end
 
-    local damagedBodyPart = nil
-    local found, lastDamagedBone = GetPedLastDamageBone(playerPed)
-    if found and lastDamagedBone then
-        local bodyPart = bodyParts[tostring(lastDamagedBone)]
-        if bodyPart then
-            damagedBodyPart = bodyPart.label
-        end
+    if isNPCKill or isSuicide then
+        killerServerId = nil
+    end
+
+    if Config.Debug then
+        print('^5Deathlog^7: Death processed - Weapon: ' .. weaponName .. ', Reason: ' .. deathReasonShort)
+        print('^5Deathlog^7: Killer Server ID: ' .. tostring(killerServerId))
+        print('^5Deathlog^7: Is Suicide: ' .. tostring(isSuicide))
+        print('^5Deathlog^7: Is NPC Kill: ' .. tostring(isNPCKill))
+        print('^5Deathlog^7: Killer Ped: ' .. tostring(killerPed))
+        print('^5Deathlog^7: Source Of Death: ' .. tostring(sourceOfDeath))
     end
 
     TriggerServerEvent('ars_ambulancejob:deathlog:OnPlayerKilled', {
@@ -220,17 +275,9 @@ local function processPlayerDeath()
         weapon = weaponName,
         street = streetName,
         coords = coords,
-        killer = isSuicide and nil or killerServerId,
-        deathReason = deathReasonShort,
-        bodyPart = damagedBodyPart
+        killer = killerServerId,
+        deathReason = deathReasonShort
     })
-
-    if Config.Debug then
-        print('^5Deathlog^7: Death processed - Weapon: ' .. weaponName .. ', Reason: ' .. deathReasonShort)
-    end
 end
 
-RegisterNetEvent('ars_ambulancejob:playerDied', function()
-    Wait(500)
-    processPlayerDeath()
-end)
+exports("DeathLog", processPlayerDeath)

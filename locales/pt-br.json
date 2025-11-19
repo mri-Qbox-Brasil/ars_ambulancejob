@@ -186,5 +186,7 @@
     "deathlog_killer_character_name": "Nome do Personagem do Assassino",
     "deathlog_killer_license": "License do Assassino",
     "deathlog_killer_discord": "Discord do Assassino",
-    "deathlog_na": "N/A"
+    "deathlog_na": "N/A",
+    "deathlog_killed_by_npc": "foi morto por um NPC",
+    "deathlog_killed_by_npc_short": "Morto por NPC"
 }

@@ -303,7 +303,7 @@ end)
 AddEventHandler('gameEventTriggered', function(event, data)
     if event ~= 'CEventNetworkEntityDamage' then return end
 
-    local victim, victimDied, weapon = data[1], data[4], data[7]
+    local victim, attacker, victimDied, weapon = data[1], data[2], data[4], data[7]
     utils.debug(weapon)
 
 
@@ -321,11 +321,56 @@ AddEventHandler('gameEventTriggered', function(event, data)
         deathData.isDead = true
         deathData.weapon = weapon
 
+        if weapon and weapon ~= 0 then
+            LocalPlayer.state:set("deathweapon", weapon, true)
+            utils.debug("^2Deathlog^7: Arma capturada do evento - Hash: " .. tostring(weapon))
+        else
+            utils.debug("^3Deathlog^7: Hash da arma não disponível no evento")
+        end
+
+        local killerServerId = nil
+        local isNPCKill = false
+
+        if attacker and attacker ~= 0 then
+            if IsEntityAVehicle(attacker) then
+                local driver = GetPedInVehicleSeat(attacker, -1)
+                if driver and driver ~= 0 then
+                    if IsPedAPlayer(driver) then
+                        killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(driver))
+                        LocalPlayer.state:set("deathKillerServerId", killerServerId, true)
+                        LocalPlayer.state:set("deathIsVehicleKill", true, true)
+                        utils.debug("^2Deathlog^7: Assassino capturado do evento (veículo) - Server ID: " .. tostring(killerServerId))
+                    else
+                        isNPCKill = true
+                        LocalPlayer.state:set("deathIsNPCKill", true, true)
+                        utils.debug("^2Deathlog^7: Morte por NPC (veículo)")
+                    end
+                end
+            elseif IsEntityAPed(attacker) then
+                if IsPedAPlayer(attacker) then
+                    killerServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(attacker))
+                    LocalPlayer.state:set("deathKillerServerId", killerServerId, true)
+                    LocalPlayer.state:set("deathIsVehicleKill", false, true)
+                    utils.debug("^2Deathlog^7: Assassino capturado do evento - Server ID: " .. tostring(killerServerId))
+                else
+                    isNPCKill = true
+                    LocalPlayer.state:set("deathIsNPCKill", true, true)
+                    utils.debug("^2Deathlog^7: Morte por NPC")
+                end
+            end
+        end
+
+        if not killerServerId and not isNPCKill then
+            LocalPlayer.state:set("deathKillerServerId", nil, true)
+            LocalPlayer.state:set("deathIsVehicleKill", nil, true)
+            LocalPlayer.state:set("deathIsNPCKill", nil, true)
+        end
+
         TriggerServerEvent('ars_ambulancejob:updateDeathStatus', deathData)
         LocalPlayer.state:set("dead", true, true)
         initPlayerDeath()
 
-        TriggerEvent('ars_ambulancejob:playerDied')
+        exports["ars_ambulancejob"]:DeathLog()
     end
 
     updateInjuries(victim, weapon)

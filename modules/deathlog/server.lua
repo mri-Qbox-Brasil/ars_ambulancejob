@@ -33,7 +33,6 @@ RegisterServerEvent('ars_ambulancejob:deathlog:OnPlayerKilled', function(data)
     local coords = data.coords
     local killerServerId = data.killer
     local deathReason = data.deathReason or locale("deathlog_killed")
-    local bodyPart = data.bodyPart
 
     local victimIds = GetPlayerIdentifiers(sourcePlayer)
     local victimDiscordId = GetDiscordId(victimIds)
@@ -53,14 +52,16 @@ RegisterServerEvent('ars_ambulancejob:deathlog:OnPlayerKilled', function(data)
 
     if killerServerId and killerServerId > 0 then
         local killerIds = GetPlayerIdentifiers(killerServerId)
-        killerDiscordId = GetDiscordId(killerIds)
-        killerLicense = GetLicenseId(killerIds)
-        killerName = GetPlayerName(killerServerId) or locale("deathlog_unknown")
-        killerCharacterName = killerName
-        if Framework and Framework.getPlayerName then
-            local charName = Framework.getPlayerName(killerServerId)
-            if charName then
-                killerCharacterName = charName
+        if killerIds then
+            killerDiscordId = GetDiscordId(killerIds)
+            killerLicense = GetLicenseId(killerIds)
+            killerName = GetPlayerName(killerServerId) or locale("deathlog_unknown")
+            killerCharacterName = killerName
+            if Framework and Framework.getPlayerName then
+                local charName = Framework.getPlayerName(killerServerId)
+                if charName then
+                    killerCharacterName = charName
+                end
             end
         end
     end
@@ -68,7 +69,10 @@ RegisterServerEvent('ars_ambulancejob:deathlog:OnPlayerKilled', function(data)
     if Config.Debug then
         print("^5DEBUG^7: ^4Player Name:^7", playerName)
         print("^5DEBUG^7: ^4Victim Discord ID:^7", victimDiscordId)
-        print("^5DEBUG^7: ^4Killer Discord ID:^7", killerDiscordId)
+        print("^5DEBUG^7: ^4Killer Server ID:^7", tostring(killerServerId))
+        print("^5DEBUG^7: ^4Killer Name:^7", killerName)
+        print("^5DEBUG^7: ^4Killer Discord ID:^7", killerDiscordId or "N/A")
+        print("^5DEBUG^7: ^4Killer License:^7", killerLicense or "N/A")
         print("^5DEBUG^7: ^8Message:^7", message)
         print("^5DEBUG^7: ^2Weapon:^7", weapon)
         print("^5DEBUG^7: ^3Street:^7", street)
@@ -78,26 +82,30 @@ RegisterServerEvent('ars_ambulancejob:deathlog:OnPlayerKilled', function(data)
     -- Format time
     local timeString = os.date('%Y-%m-%d %H:%M:%S')
 
+    local fields = {
+        {["name"] = locale("deathlog_victim"), ["value"] = playerName, ["inline"] = true},
+        {["name"] = locale("deathlog_victim_id"), ["value"] = tostring(sourcePlayer), ["inline"] = true},
+        {["name"] = locale("deathlog_victim_character_name"), ["value"] = victimCharacterName, ["inline"] = true},
+        {["name"] = locale("deathlog_victim_license"), ["value"] = victimLicense or locale("deathlog_na"), ["inline"] = false},
+        {["name"] = locale("deathlog_victim_discord"), ["value"] = victimDiscordId and ("discord:" .. victimDiscordId) or locale("deathlog_na"), ["inline"] = false},
+        {["name"] = locale("deathlog_death_reason"), ["value"] = deathReason, ["inline"] = true},
+        {["name"] = locale("deathlog_time"), ["value"] = timeString, ["inline"] = true},
+        {["name"] = locale("deathlog_weapon"), ["value"] = weapon or locale("deathlog_unknown"), ["inline"] = true},
+    }
+
+    if killerServerId and killerServerId > 0 then
+        fields[#fields + 1] = {["name"] = locale("deathlog_killer"), ["value"] = killerName, ["inline"] = true}
+        fields[#fields + 1] = {["name"] = locale("deathlog_killer_id"), ["value"] = tostring(killerServerId), ["inline"] = true}
+        fields[#fields + 1] = {["name"] = locale("deathlog_killer_character_name"), ["value"] = killerCharacterName, ["inline"] = true}
+        fields[#fields + 1] = {["name"] = locale("deathlog_killer_license"), ["value"] = killerLicense or locale("deathlog_na"), ["inline"] = false}
+        fields[#fields + 1] = {["name"] = locale("deathlog_killer_discord"), ["value"] = killerDiscordId and ("discord:" .. killerDiscordId) or locale("deathlog_na"), ["inline"] = false}
+    end
+
     local embed = {
         {
             ["color"] = 16711680,
             ["title"] = locale("deathlog_title"),
-            ["fields"] = {
-                {["name"] = locale("deathlog_victim"), ["value"] = playerName, ["inline"] = true},
-                {["name"] = locale("deathlog_victim_id"), ["value"] = tostring(sourcePlayer), ["inline"] = true},
-                {["name"] = locale("deathlog_victim_character_name"), ["value"] = victimCharacterName, ["inline"] = true},
-                {["name"] = locale("deathlog_victim_license"), ["value"] = victimLicense or locale("deathlog_na"), ["inline"] = false},
-                {["name"] = locale("deathlog_victim_discord"), ["value"] = victimDiscordId and ("discord:" .. victimDiscordId) or locale("deathlog_na"), ["inline"] = false},
-                {["name"] = locale("deathlog_death_reason"), ["value"] = deathReason, ["inline"] = true},
-                {["name"] = locale("deathlog_time"), ["value"] = timeString, ["inline"] = true},
-                {["name"] = locale("deathlog_weapon"), ["value"] = weapon or locale("deathlog_unknown"), ["inline"] = true},
-                {["name"] = locale("deathlog_body_part"), ["value"] = bodyPart or locale("deathlog_na"), ["inline"] = true},
-                {["name"] = locale("deathlog_killer"), ["value"] = killerName, ["inline"] = true},
-                {["name"] = locale("deathlog_killer_id"), ["value"] = killerServerId and tostring(killerServerId) or locale("deathlog_na"), ["inline"] = true},
-                {["name"] = locale("deathlog_killer_character_name"), ["value"] = killerCharacterName, ["inline"] = true},
-                {["name"] = locale("deathlog_killer_license"), ["value"] = killerLicense or locale("deathlog_na"), ["inline"] = false},
-                {["name"] = locale("deathlog_killer_discord"), ["value"] = killerDiscordId and ("discord:" .. killerDiscordId) or locale("deathlog_na"), ["inline"] = false},
-            },
+            ["fields"] = fields,
             ["timestamp"] = os.date('!%Y-%m-%dT%H:%M:%SZ'),
             ["footer"] = {
                 ["text"] = Config.Discord.Settings.Name,
