@@ -34,16 +34,6 @@ return {
                 spawnPoint = vector4(348.84, -583.36, 42.32, 68.24),
             },
         },
-        stash = {
-            -- ['ems_stash_1'] = {
-            --     slots = 50,
-            --     weight = 50, -- kg
-            --     min_grade = 0,
-            --     label = 'Ems stash',
-            --     shared = true, -- false if you want to make everyone has a personal stash
-            --     pos = vector3(309.96, -599.2, 43.28)
-            -- }
-        },
         pharmacy = {
             ["ems_shop_1"] = {
                 job = true,

@@ -18,8 +18,6 @@
 	"have_been_fined": "Έχετε πρόστιμο για %s για %s",
 	"arrest_suspect_label": "Φυλάκιση υπόπτου",
 	"garage_interact_label": "Άνοιγμα γκαράζ",
-	"deposit_vehicle": "[E] - κατάθεση οχήματος",
-	"open_stash_label": "[E] - Ανοίξτε το stash",
 	"restrict_area_dialog_title": "Περιορισμός περιοχής",
 	"restrict_area_message_title": "Μήνυμα",
 	"restrict_area_message_description": "Το μήνυμα προς τους ανθρώπους",

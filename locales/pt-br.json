@@ -35,8 +35,6 @@
 	"healed_player": "Você curou o ID %s",
 	"heal_area": "Curar jogadores na área",
 	"healed_area": "Você curou jogadores no raio de %s",
-	"open_stash_label": "Abrir Esconderijo",
-	"control_to_open_stash": "[E] para abrir esconderijo",
 	"control_to_open_shop": "[E] ABRIR",
 	"paramedic_interact_label": "Conversar com o paramédico",
 	"paramedic_menu_title": "Paramédico",

@@ -36,8 +36,6 @@
 	"healed_player": "Vous avez soigné l'ID %s",
 	"heal_area": "Soigner les joueurs dans la zone",
 	"healed_area": "Vous avez soigné les joueurs dans un rayon de %s",
-	"open_stash_label": "Ouvrir le coffre",
-	"control_to_open_stash": "[E] pour ouvrir le coffre",
 	"control_to_open_shop": "[E] pour ouvrir la pharmacie",
 	"paramedic_interact_label": "Parler avec le médecin",
 	"paramedic_menu_title": "Médecin",

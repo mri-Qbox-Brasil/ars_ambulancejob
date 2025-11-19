@@ -35,8 +35,6 @@
 	"healed_player": "Du hast den Spieler mit ID %s geheilt",
 	"heal_area": "Spieler im Umkreis von %s heilen",
 	"healed_area": "Du hast alle Spieler im Radius von %s geheilt",
-	"open_stash_label": "Privates Lager öffnen",
-	"control_to_open_stash": "Drücke [E] um dein Lager zu öffnen",
 	"control_to_open_shop": "Drücke [E] um den Shop zu öffnen",
 	"paramedic_interact_label": "Mit Sanitäter sprechen",
 	"paramedic_menu_title": "Sanitäter",

@@ -35,8 +35,6 @@
 	"healed_player": "Hai guarito ID %s",
 	"heal_area": "Guarisci giocatori in zona",
 	"healed_area": "Hai guarito i giocatori nel raggio %s",
-	"open_stash_label": "Apri Deposito",
-	"control_to_open_stash": "[E] per aprire deposito",
 	"control_to_open_shop": "[E] per accedere al negozio",
 	"paramedic_interact_label": "Parla con medico",
 	"paramedic_menu_title": "Medico",

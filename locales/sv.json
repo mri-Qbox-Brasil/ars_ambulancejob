@@ -35,8 +35,6 @@
 	"healed_player": "Du har botat Id %s",
 	"heal_area": "Bota spelare i området",
 	"healed_area": "Du botade spelare i radie %s",
-	"open_stash_label": "Öppna förråd",
-	"control_to_open_stash": "[E] för att öppna förrådet",
 	"control_to_open_shop": "[E] för att öppna affären",
 	"paramedic_interact_label": "Prata med läkaren",
 	"paramedic_menu_title": "Läkare",

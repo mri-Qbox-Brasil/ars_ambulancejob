@@ -37,14 +37,6 @@ for name, hospital in pairs(hospitals) do
         end
     end
 
-    -- Stashes
-    for index, stash in pairs(hospital.stash) do
-        inZone = utils.inHospitalZone(stash.pos, zonePos, zoneSize)
-        if not inZone then
-            utils.debug(("^1Stash ^4%s ^0 is not in the hospital zone change coordinates"):format(stash.label))
-        end
-    end
-
     -- Pharmacy
     for index, pharmacy in pairs(hospital.pharmacy) do
         inZone = utils.inHospitalZone(pharmacy.pos, zonePos, zoneSize)

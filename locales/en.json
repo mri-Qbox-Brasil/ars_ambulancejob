@@ -35,8 +35,6 @@
 	"healed_player": "You healed Id %s",
 	"heal_area": "Heal players in area",
 	"healed_area": "You healed players in radius %s",
-	"open_stash_label": "Open Stash",
-	"control_to_open_stash": "[E] to open stash",
 	"control_to_open_shop": "[E] to open shop",
 	"paramedic_interact_label": "Talk with paramedic",
 	"paramedic_menu_title": "Paramedic",
