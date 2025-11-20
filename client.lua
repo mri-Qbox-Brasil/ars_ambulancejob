@@ -150,7 +150,12 @@ exports.ox_target:addGlobalPlayer({
             local success = lib.progressBar({
                 duration = 5000,
                 label = 'Aplicando adrenalina...',
-                canCancel = false,
+                canCancel = true,
+                disable = {
+                    car = true,
+                    move = true,
+                    combat = true
+                },
                 anim = { dict = 'amb@medic@standing@tendtodead@base', clip = 'base' },
             })
 
