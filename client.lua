@@ -138,6 +138,9 @@ exports.ox_target:addGlobalPlayer({
         icon = 'fa-solid fa-syringe',
         distance = 2.5,
         canInteract = function(entity, distance, coords, name, bone)
+            local count = exports.ox_inventory:Search('count', 'adrenaline', 1)
+            if count <= 0 then return end
+
             local targetServerId = GetPlayerServerId(NetworkGetPlayerIndexFromPed(entity))
             local data = lib.callback.await('ars_ambulancejob:getData', false, targetServerId)
             local isDead = data.status.isDead
