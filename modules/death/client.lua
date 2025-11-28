@@ -28,6 +28,7 @@ local animations                   = lib.load("config").animations
 local mumbleDisable                 = lib.load("config").mumbleDisable
 local disableEMSCalls               = lib.load("config").disableEMSCalls
 local disableRespawnAnimation       = lib.load("config").disableRespawnAnimation
+local ejectDeadFromVehicle          = lib.load("config").ejectDeadFromVehicle
 
 function stopPlayerDeath()
     player.isDead = false
@@ -163,9 +164,54 @@ local function respawnPlayer()
     player.respawning = false
 end
 
+local function showScaleform(title, sec)
+	function Initialize(scaleform)
+		local scaleform = RequestScaleformMovie(scaleform)
+
+		while not HasScaleformMovieLoaded(scaleform) do
+			Citizen.Wait(0)
+		end
+		PushScaleformMovieFunction(scaleform, "SHOW_SHARD_WASTED_MP_MESSAGE")
+		PushScaleformMovieFunctionParameterString(title)
+		-- PushScaleformMovieFunctionParameterString(desc)
+		PopScaleformMovieFunctionVoid()
+		return scaleform
+	end
+	scaleform = Initialize("mp_big_message_freemode")
+
+    PlaySoundFrontend(-1, "Bed", "WastedSounds", 1)
+
+	while sec > 0 do
+		sec = sec - 0.02
+		Citizen.Wait(0)
+		DrawScaleformMovieFullscreen(scaleform, 255, 255, 255, 255, 0)
+	end
+	SetScaleformMovieAsNoLongerNeeded(scaleform)
+end
+
 local useExtraEffects = lib.load("config").extraEffects
 local respawnTime = lib.load("config").respawnTime
 local function initPlayerDeath(logged_dead)
+    if ejectDeadFromVehicle and IsPedInAnyVehicle(cache.ped, false) then
+        local vehicle = GetVehiclePedIsIn(cache.ped, false)
+
+        TaskLeaveVehicle(cache.ped, vehicle, 4160)
+        Wait(250)
+
+        local vehCoords = GetEntityCoords(vehicle)
+        local forward = GetEntityForwardVector(vehicle)
+        local ejectPos = vec3(
+            vehCoords.x + forward.x * 2.0,
+            vehCoords.y + forward.y * 2.0,
+            vehCoords.z + 0.5
+        )
+
+        ClearPedTasksImmediately(cache.ped)
+        SetEntityCoordsNoOffset(cache.ped, ejectPos.x, ejectPos.y, ejectPos.z, false, false, false)
+        Wait(100)
+        SetPedToRagdoll(cache.ped, 5000, 5000, 0, true, true, false)
+    end
+
     if player.isDead then return end
 
     player.isDead = true
@@ -186,6 +232,7 @@ local function initPlayerDeath(logged_dead)
     if useExtraEffects then
         ShakeGameplayCam('DEATH_FAIL_IN_EFFECT_SHAKE', 1.0)
         AnimpostfxPlay('DeathFailOut', 0, true)
+        showScaleform("~r~se fodeu", 20)
 
         Wait(4000)
 
@@ -213,8 +260,8 @@ local function initPlayerDeath(logged_dead)
         SetPedIntoVehicle(cache.ped, cache.vehicle, cache.seat)
     end
 
-    SetEntityInvincible(cache.ped, true)
-    SetEntityHealth(cache.ped, 100)
+    -- SetEntityInvincible(cache.ped, true) -- Testando
+    -- SetEntityHealth(cache.ped, 100)
     SetEveryoneIgnorePlayer(cache.playerId, true)
 
     local time = 60000 * respawnTime
@@ -246,12 +293,22 @@ local function initPlayerDeath(logged_dead)
                     createDistressCall()
                 end
 
+                utils.drawTextFrame({
+                    x = 0.5,
+                    y = 0.86,
+                    msg = "Pressione ~y~Y~w~ para solicitar ~y~/socorro NPC"
+                })
+
+                if IsControlJustPressed(0, 246) then -- Tecla Y
+                    ExecuteCommand("socorro")
+                end
+
                 if GetGameTimer() - deathTime >= time then
                     EnableControlAction(0, 47, true)
 
                     utils.drawTextFrame({
                         x = 0.5,
-                        y = 0.86,
+                        y = 0.82,
                         msg = locale("death_screen_respawn")
                     })
 
@@ -270,7 +327,7 @@ local function initPlayerDeath(logged_dead)
                 else
                     utils.drawTextFrame({
                         x = 0.5,
-                        y = 0.86,
+                        y = 0.82,
                         msg = (locale("death_screen_respawn_timer")):format(math.floor((time / 1000) - elapsedSeconds))
                     })
                 end

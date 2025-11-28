@@ -15,7 +15,7 @@ Config.healCommand = "heal"
 Config.healAreaCommand = "healarea"
 Config.reviveAllCommand = "reviveall"
 
-Config.adminGroup = "admin"
+Config.adminGroup = {"admin", "mod", "support"}
 
 Config.mumbleDisable = false -- true >> desativar o mumble ao morrer
 Config.healthRegen = true -- true >> desativar a recuperação de vida automática do GTA
@@ -40,11 +40,14 @@ Config.allowAlways = false             -- false if you want it to work only when
 Config.ambulanceStretchers = 2        -- how many stretchers should an ambulance have
 Config.consumeItemPerUse = 10         -- every time you use an item it gets used by 10%
 
-Config.timeToWaitForCommand = 2       -- when player dies he needs to wait 2 minutes to do the ambulance command
 Config.npcReviveCommand = "socorro" -- this will work only when there are no medics online
+Config.timeToWaitForCommand = 2       -- when player dies he needs to wait 2 minutes to do the ambulance command
+Config.minimumOnServiceForNPC = 3      -- mínimo de médicos online para desabilitar o comando de socorro da ambulância NPC <- Se for 0, quando tiver 1 ou mais médicos online, o comando será desabilitado
 
 Config.usePedToDepositVehicle = false -- if false the vehicle will instantly despawns
-Config.extraEffects = false            -- false >> disables the screen shake and the black and white screen
+Config.extraEffects = true            -- false >> disables the screen shake and the black and white screen
+
+Config.ejectDeadFromVehicle = true   -- OPÇÃO ZAP: true >> ejects the dead player from the vehicle they are in
 
 Config.emsVehicles = {                -- vehicles that have access to the props (cones and ecc..)
 	ambulance = true,

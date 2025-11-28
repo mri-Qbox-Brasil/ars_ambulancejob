@@ -153,7 +153,7 @@ lib.callback.register('ars_ambulancejob:openMedicalBag', function(playerId)
 end)
 
 
-lib.callback.register('ars_ambulancejob:getMedicsOniline', function(source)
+lib.callback.register('ars_ambulancejob:getMedicsOnline', function(source)
     local count = 0
     local players = GetPlayers()
 

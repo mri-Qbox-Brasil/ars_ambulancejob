@@ -10,6 +10,7 @@ local TaskPlayAnim            = TaskPlayAnim
 local Wait                    = Wait
 
 local paramedicTreatmentPrice = lib.load("config").paramedicTreatmentPrice
+local minimumOnServiceForNPC = lib.load("config").minimumOnServiceForNPC
 
 local function openParamedicMenu(ped, hospital)
     lib.registerContext({
@@ -141,7 +142,7 @@ function initParamedic()
                     groups = false,
                     fn = function()
                         if not allowAlwaysTreatment then
-                            local medicsOnline = lib.callback.await('ars_ambulancejob:getMedicsOniline', false)
+                            local medicsOnline = lib.callback.await('ars_ambulancejob:getMedicsOnline', false)
                             if medicsOnline <= 0 then
                                 openParamedicMenu(ped, hospital)
                             else
@@ -159,8 +160,8 @@ end
 
 local function offlineRevive()
     if not player.isDead then return end
-    local medicsOnline = lib.callback.await('ars_ambulancejob:getMedicsOniline', false)
-    if medicsOnline > 0 then return utils.showNotification(locale("medics_online")) end
+    local medicsOnline = lib.callback.await('ars_ambulancejob:getMedicsOnline', false)
+    if medicsOnline > minimumOnServiceForNPC then return utils.showNotification(locale("medics_online")) end
     if player.timePassedForCommand > 0 then return utils.showNotification(locale("wait_time"):format(player.timePassedForCommand)) end
 
     utils.showNotification(locale("medic_coming"))
