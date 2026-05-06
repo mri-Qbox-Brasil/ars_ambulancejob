@@ -239,6 +239,7 @@ function Framework.healStatus()
 
     TriggerServerEvent('consumables:server:addHunger', playerData.metadata.hunger + 100000)
     TriggerServerEvent('consumables:server:addThirst', playerData.metadata.hunger + 100000)
+    TriggerServerEvent('hud:server:RelieveStress', 100)
 end
 
 function Framework.hasItem(item, _quantity)
