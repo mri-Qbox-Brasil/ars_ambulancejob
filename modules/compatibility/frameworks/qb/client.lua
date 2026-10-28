@@ -235,10 +235,7 @@ function Framework.openBossMenu(job)
 end
 
 function Framework.healStatus()
-    local playerData = QBCore.Functions.GetPlayerData()
-
-    TriggerServerEvent('consumables:server:addHunger', playerData.metadata.hunger + 100000)
-    TriggerServerEvent('consumables:server:addThirst', playerData.metadata.hunger + 100000)
+    lib.callback.await('ars_ambulancejob:resetNeeds', false)
     TriggerServerEvent('hud:server:RelieveStress', 100)
 end
 

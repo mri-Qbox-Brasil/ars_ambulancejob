@@ -3,7 +3,7 @@ use_fxv2_oal 'yes'
 lua54 'yes'
 game 'gta5'
 
-version '2.0.0'
+version '2.0.1'
 author 'MRI'
 credits 'Arius Scripts'
 description 'Advanced ambulance job with intergrated death system'

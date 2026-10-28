@@ -122,3 +122,13 @@ QBCore.Functions.CreateUseableItem(tabletItem, function(source, item)
 
     TriggerClientEvent("ars_ambulancejob:openDistressCalls", source)
 end)
+
+-- qbx consumables add events are server-only, so client triggers never reached them
+lib.callback.register("ars_ambulancejob:resetNeeds", function(source)
+    local xPlayer = QBCore.Functions.GetPlayer(source)
+    if not xPlayer then return end
+
+    xPlayer.Functions.SetMetaData("hunger", 100)
+    xPlayer.Functions.SetMetaData("thirst", 100)
+    TriggerClientEvent("hud:client:UpdateNeeds", source, 100, 100)
+end)
